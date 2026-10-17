@@ -7,14 +7,34 @@
 <style>
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial}
   .wrap{min-height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px;box-sizing:border-box;background:#f7f7f7}
-  p{max-width:800px;color:#111;margin:0 0 32px;text-align:center;line-height:1.6}
+  .logo{width:96px;margin-bottom:24px}
+  p{max-width:900px;color:#111;margin:0 0 24px;text-align:center;line-height:1.6}
   canvas{background:white;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+  .footer{margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .icons{display:flex;gap:16px}
+  .icons img{width:36px;height:36px;filter:grayscale(100%);transition:filter .18s ease}
+  .icons a:hover img{filter:none}
+  .contact{color:#444;font-size:14px}
+  a{color:inherit}
 </style>
 </head>
 <body>
 <div class="wrap">
-<p>Plateia AI is a Grassroots initiative demystifying AI and initiating open dialogues about its social and environmental impact.</p>
-<canvas id="c" width="420" height="420" aria-hidden="true"></canvas>
+  <img class="logo" src="images/logo_only_with_colour.png" alt="Plateia AI logo">
+  <p>Plateia AI is a grassroots, independent initiative committed to making artificial intelligence accessible, inclusive, and transparent for everyone in Greece. Born from a collective effort of researchers, educators, and citizens, Plateia AI aims to bridge the gap between technology and society by fostering open dialogue, education, and collaboration. Our digital platform serves as a public space where people can explore AI developments, connect with others, and contribute to a shared understanding of how AI shapes our world.</p>
+  <canvas id="c" width="420" height="420" aria-hidden="true"></canvas>
+
+  <footer class="footer" role="contentinfo">
+    <div class="icons">
+      <a href="https://www.instagram.com/plateiaai/" target="_blank" rel="noopener noreferrer" aria-label="Plateia AI on Instagram">
+        <img src="images/instagram.png" alt="Instagram">
+      </a>
+      <a href="https://www.linkedin.com/company/plateia-ai-gr/" target="_blank" rel="noopener noreferrer" aria-label="Plateia AI on LinkedIn">
+        <img src="images/linkedin.png" alt="LinkedIn">
+      </a>
+    </div>
+    <div class="contact">contact: <a href="mailto:info@plateia-ai.gr">info@plateia-ai.gr</a></div>
+  </footer>
 </div>
 <script>
 const canvas=document.getElementById('c');
