@@ -37,62 +37,93 @@
   </footer>
 </div>
 <script>
-const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d');
-let size=120;
-let x=(canvas.width-size)/2,y=(canvas.height-size)/2;
-let dragging=false,offsetX=0,offsetY=0;
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const logo = new Image();
+logo.src = 'images/logo_only_with_colour.png';
 
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+let size = 150;
+let x = (canvas.width - size) / 2;
+let y = (canvas.height - size) / 2;
+let dragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#f4f7f8';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   ctx.save();
-  ctx.shadowColor='rgba(0,0,0,0.15)';
-  ctx.shadowBlur=12;
-  ctx.fillStyle=dragging ? '#1f6feb' : '#0ea5a4';
-  ctx.fillRect(x,y,size,size);
+  ctx.shadowColor = 'rgba(0,0,0,0.14)';
+  ctx.shadowBlur = 10;
+  if (logo.complete) {
+    ctx.drawImage(logo, x, y, size, size);
+  } else {
+    ctx.fillStyle = '#0ea5a4';
+    ctx.fillRect(x, y, size, size);
+  }
   ctx.restore();
 }
+
+logo.addEventListener('load', draw);
 draw();
 
-function inside(mx,my){ return mx>=x && mx<=x+size && my>=y && my<=y+size; }
-
-function getPoint(e){
-  const rect=canvas.getBoundingClientRect();
-  if(e.touches && e.touches[0]) return {mx: e.touches[0].clientX-rect.left, my: e.touches[0].clientY-rect.top};
-  return {mx: e.clientX-rect.left, my: e.clientY-rect.top};
+function inside(mx, my) {
+  return mx >= x && mx <= x + size && my >= y && my <= y + size;
 }
 
-function onPointerDown(e){
-  const {mx,my} = getPoint(e);
-  if(inside(mx,my)){
-    dragging=true;
-    offsetX=mx-x; offsetY=my-y;
+function getPoint(e) {
+  const rect = canvas.getBoundingClientRect();
+  if (e.touches && e.touches[0]) {
+    return { mx: e.touches[0].clientX - rect.left, my: e.touches[0].clientY - rect.top };
+  }
+  return { mx: e.clientX - rect.left, my: e.clientY - rect.top };
+}
+
+function onPointerDown(e) {
+  const { mx, my } = getPoint(e);
+  if (inside(mx, my)) {
+    dragging = true;
+    offsetX = mx - x;
+    offsetY = my - y;
     e.preventDefault();
     draw();
   }
 }
-function onPointerMove(e){
-  if(!dragging) return;
-  const {mx,my} = getPoint(e);
-  x = Math.max(0, Math.min(canvas.width-size, mx - offsetX));
-  y = Math.max(0, Math.min(canvas.height-size, my - offsetY));
+
+function onPointerMove(e) {
+  if (!dragging) return;
+  const { mx, my } = getPoint(e);
+  x = Math.max(0, Math.min(canvas.width - size, mx - offsetX));
+  y = Math.max(0, Math.min(canvas.height - size, my - offsetY));
   draw();
 }
-function onPointerUp(e){
-  if(dragging){
-    dragging=false;
+
+function onPointerUp() {
+  if (dragging) {
+    dragging = false;
     draw();
   }
 }
 
-canvas.addEventListener('mousedown',onPointerDown);
-canvas.addEventListener('touchstart',onPointerDown,{passive:false});
-window.addEventListener('mousemove',onPointerMove);
-window.addEventListener('touchmove',function(e){ if(dragging){ e.preventDefault(); onPointerMove(e); } },{passive:false});
-window.addEventListener('mouseup',onPointerUp);
-window.addEventListener('touchend',onPointerUp);
-
-canvas.addEventListener('dblclick',()=>{ x=(canvas.width-size)/2;y=(canvas.height-size)/2;draw(); });
+canvas.addEventListener('mousedown', onPointerDown);
+canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+window.addEventListener('mousemove', onPointerMove);
+window.addEventListener('touchmove', function(e) {
+  if (dragging) {
+    e.preventDefault();
+    onPointerMove(e);
+  }
+}, { passive: false });
+window.addEventListener('mouseup', onPointerUp);
+window.addEventListener('touchend', onPointerUp);
+canvas.addEventListener('dblclick', () => {
+  x = (canvas.width - size) / 2;
+  y = (canvas.height - size) / 2;
+  draw();
+});
 </script>
 </body>
 </html>
