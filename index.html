@@ -7,9 +7,7 @@
 <style>
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial}
   .wrap{min-height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px;box-sizing:border-box;background:#f7f7f7}
-  .logo{width:96px;margin-bottom:24px}
-  p{max-width:900px;color:#111;margin:0 0 24px;text-align:center;line-height:1.6}
-  canvas{background:white;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+  .logo{width:300px;margin-bottom:24px}
   .footer{margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:8px}
   .icons{display:flex;gap:16px}
   .icons img{width:36px;height:36px;filter:grayscale(100%);transition:filter .18s ease}
@@ -20,9 +18,9 @@
 </head>
 <body>
 <div class="wrap">
-  <img class="logo" src="images/logo_only_with_colour.png" alt="Plateia AI logo">
-  <p>Plateia AI is a grassroots, independent initiative committed to making artificial intelligence accessible, inclusive, and transparent for everyone in Greece. Born from a collective effort of researchers, educators, and citizens, Plateia AI aims to bridge the gap between technology and society by fostering open dialogue, education, and collaboration. Our digital platform serves as a public space where people can explore AI developments, connect with others, and contribute to a shared understanding of how AI shapes our world.</p>
-  <canvas id="c" width="420" height="420" aria-hidden="true"></canvas>
+  <img class="logo" src="images/logo_with_text_transparent.png" alt="Plateia AI logo">
+  <p>Plateia AI is a grassroots initiative demystifying AI and initiating open dialogues about its social and environmental impact.</p>
+  <p><i>New site coming soon!</p>
 
   <footer class="footer" role="contentinfo">
     <div class="icons">
@@ -36,94 +34,6 @@
     <div class="contact">contact: <a href="mailto:info@plateia-ai.gr">info@plateia-ai.gr</a></div>
   </footer>
 </div>
-<script>
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-const logo = new Image();
-logo.src = 'images/logo_only_with_colour.png';
 
-let size = 150;
-let x = (canvas.width - size) / 2;
-let y = (canvas.height - size) / 2;
-let dragging = false;
-let offsetX = 0;
-let offsetY = 0;
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = '#f4f7f8';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,0.14)';
-  ctx.shadowBlur = 10;
-  if (logo.complete) {
-    ctx.drawImage(logo, x, y, size, size);
-  } else {
-    ctx.fillStyle = '#0ea5a4';
-    ctx.fillRect(x, y, size, size);
-  }
-  ctx.restore();
-}
-
-logo.addEventListener('load', draw);
-draw();
-
-function inside(mx, my) {
-  return mx >= x && mx <= x + size && my >= y && my <= y + size;
-}
-
-function getPoint(e) {
-  const rect = canvas.getBoundingClientRect();
-  if (e.touches && e.touches[0]) {
-    return { mx: e.touches[0].clientX - rect.left, my: e.touches[0].clientY - rect.top };
-  }
-  return { mx: e.clientX - rect.left, my: e.clientY - rect.top };
-}
-
-function onPointerDown(e) {
-  const { mx, my } = getPoint(e);
-  if (inside(mx, my)) {
-    dragging = true;
-    offsetX = mx - x;
-    offsetY = my - y;
-    e.preventDefault();
-    draw();
-  }
-}
-
-function onPointerMove(e) {
-  if (!dragging) return;
-  const { mx, my } = getPoint(e);
-  x = Math.max(0, Math.min(canvas.width - size, mx - offsetX));
-  y = Math.max(0, Math.min(canvas.height - size, my - offsetY));
-  draw();
-}
-
-function onPointerUp() {
-  if (dragging) {
-    dragging = false;
-    draw();
-  }
-}
-
-canvas.addEventListener('mousedown', onPointerDown);
-canvas.addEventListener('touchstart', onPointerDown, { passive: false });
-window.addEventListener('mousemove', onPointerMove);
-window.addEventListener('touchmove', function(e) {
-  if (dragging) {
-    e.preventDefault();
-    onPointerMove(e);
-  }
-}, { passive: false });
-window.addEventListener('mouseup', onPointerUp);
-window.addEventListener('touchend', onPointerUp);
-canvas.addEventListener('dblclick', () => {
-  x = (canvas.width - size) / 2;
-  y = (canvas.height - size) / 2;
-  draw();
-});
-</script>
 </body>
 </html>
