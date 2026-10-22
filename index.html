@@ -1,28 +1,107 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Plateia AI</title>
-<style>
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial}
-  .wrap{min-height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px;box-sizing:border-box;background:#f7f7f7}
-  .logo{width:300px;margin-bottom:24px}
-  .footer{margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:8px}
-  .icons{display:flex;gap:16px}
-  .icons img{width:36px;height:36px;filter:grayscale(100%);transition:filter .18s ease}
-  .icons a:hover img{filter:none}
-  .contact{color:#444;font-size:14px}
-  a{color:inherit}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <img class="logo" src="images/logo_with_text_transparent.png" alt="Plateia AI logo">
-  <p>Plateia AI is a grassroots initiative demystifying AI and initiating open dialogues about its social and environmental impact.</p>
-  <p><i>New site coming soon!</p>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Plateia AI is a grassroots initiative demystifying AI and initiating open dialogues about its social and environmental impact.">
+  <title>Plateia AI</title>
 
-  <footer class="footer" role="contentinfo">
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #dededb;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    header {
+      position: fixed;
+      z-index: 10;
+      top: 24px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .logo { width: 240px; max-width: 60vw; }
+
+    .tagline {
+      margin: 0;
+      max-width: 460px;
+      text-align: center;
+      color: #62625f;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    footer {
+      position: fixed;
+      z-index: 10;
+      bottom: 22px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .icons { display: flex; gap: 16px; pointer-events: auto; }
+
+    .icons img {
+      width: 30px;
+      height: 30px;
+      filter: grayscale(100%);
+      opacity: 0.75;
+      transition: filter .18s ease, opacity .18s ease;
+    }
+
+    .icons a:hover img { filter: none; opacity: 1; }
+
+    .contact {
+      color: #62625f;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      pointer-events: auto;
+    }
+
+    .contact a { color: inherit; }
+
+    @media (max-width: 480px) {
+      header { top: 16px; }
+      .tagline { font-size: 12px; }
+      footer { bottom: 16px; }
+      .contact { font-size: 10px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img class="logo" src="images/logo_with_text_transparent.png" alt="Plateia AI logo">
+    <p class="tagline"><i>Plateia AI is a grassroots initiative demystifying AI and initiating open dialogues about its social and environmental impact.</i></p>
+  </header>
+
+  <footer role="contentinfo">
     <div class="icons">
       <a href="https://www.instagram.com/plateiaai/" target="_blank" rel="noopener noreferrer" aria-label="Plateia AI on Instagram">
         <img src="images/instagram.png" alt="Instagram">
@@ -33,7 +112,499 @@
     </div>
     <div class="contact">contact: <a href="mailto:info@plateia-ai.gr">info@plateia-ai.gr</a></div>
   </footer>
-</div>
 
+  <script type="module">
+    import * as THREE from
+      'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+
+    // --------------------------------------------------
+    // RENDERER, SCENE, CAMERA
+    // --------------------------------------------------
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#dededb');
+    scene.fog = new THREE.Fog('#dededb', 9, 26);
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+
+    // Pull the camera back far enough that the square fits on any screen.
+    function fitCamera() {
+      const halfTan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const fitHeight = 5.2 / halfTan;
+      const fitWidth = 3.9 / (halfTan * camera.aspect);
+      const distance = Math.max(fitHeight, fitWidth);
+
+      camera.position.set(0, 0, distance);
+      scene.fog.near = distance - 2;
+      scene.fog.far = distance + 16;
+      camera.updateProjectionMatrix();
+    }
+
+    fitCamera();
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x858580, 2.1));
+
+    const light = new THREE.DirectionalLight(0xffffff, 3);
+    light.position.set(-3, 5, 7);
+    scene.add(light);
+
+    // --------------------------------------------------
+    // PARTICLE FIELD (with room for click-spawned dots)
+    // --------------------------------------------------
+
+    const BASE_PARTICLES = 1800;
+    const MAX_SPAWNED = 6000;
+    const MAX_PARTICLES = BASE_PARTICLES + MAX_SPAWNED;
+    const SPREAD = 7.5;
+
+    const positions = new Float32Array(MAX_PARTICLES * 3);
+    const particles = [];
+    let particleCount = 0;
+    let nextSpawnSlot = 0;
+
+    function orbitFor(angle, radius, y) {
+      return {
+        angle,
+        radius,
+        y,
+        speed: 0.035 + Math.random() * 0.10,
+        phase: Math.random() * Math.PI * 2,
+        origin: null,
+        born: 0
+      };
+    }
+
+    for (let i = 0; i < BASE_PARTICLES; i++) {
+      particles.push(orbitFor(
+        Math.random() * Math.PI * 2,
+        2 + Math.random() * SPREAD,
+        (Math.random() - 0.5) * SPREAD * 1.2
+      ));
+    }
+    particleCount = BASE_PARTICLES;
+
+    // Make a round particle texture.
+    const particleCanvas = document.createElement('canvas');
+    particleCanvas.width = 64;
+    particleCanvas.height = 64;
+
+    const context = particleCanvas.getContext('2d');
+    context.beginPath();
+    context.arc(32, 32, 28, 0, Math.PI * 2);
+    context.fillStyle = '#ffffff';
+    context.fill();
+
+    const particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+    particleGeometry.setDrawRange(0, particleCount);
+
+    const field = new THREE.Points(
+      particleGeometry,
+      new THREE.PointsMaterial({
+        color: 0x30302e,
+        size: 0.018,
+        map: new THREE.CanvasTexture(particleCanvas),
+        transparent: true,
+        opacity: 0.7,
+        alphaTest: 0.1,
+        sizeAttenuation: true,
+        depthWrite: false
+      })
+    );
+    scene.add(field);
+
+    // Burst a handful of dots out of a world-space point; they drift
+    // outwards and then settle into the same orbit as the others.
+    function spawnDots(point, amount) {
+      const local = field.worldToLocal(point.clone());
+      const now = performance.now();
+
+      for (let i = 0; i < amount; i++) {
+        const target = local.clone().add(new THREE.Vector3(
+          (Math.random() - 0.5) * 1.6,
+          (Math.random() - 0.5) * 1.6,
+          (Math.random() - 0.5) * 1.6
+        ));
+
+        const p = orbitFor(
+          Math.atan2(target.z, target.x),
+          Math.max(0.5, Math.hypot(target.x, target.z)),
+          target.y
+        );
+        p.origin = local;
+        p.born = now;
+
+        // Fill free slots first, then recycle the oldest spawned dots.
+        const slot = BASE_PARTICLES + nextSpawnSlot;
+        particles[slot] = p;
+        nextSpawnSlot = (nextSpawnSlot + 1) % MAX_SPAWNED;
+        particleCount = Math.max(particleCount, slot + 1);
+      }
+
+      particleGeometry.setDrawRange(0, particleCount);
+    }
+
+    // --------------------------------------------------
+    // THE PUBLIC SQUARE (minimal, low-poly)
+    // --------------------------------------------------
+
+    const palette = {
+      grass: '#7f9a5e',
+      paving: '#e3c9a0',
+      stone: '#cdb48c',
+      water: '#5fb3b0',
+      wallTerracotta: '#d9774f',
+      wallCream: '#ece0c8',
+      wallSand: '#d8b98f',
+      roof: '#b9503a',
+      roofDark: '#8f4a3a',
+      umbrella: '#f0a63a',
+      tree: '#5d8a4e',
+      trunk: '#6b4e3a',
+      pole: '#3a3a38'
+    };
+
+    const materialCache = {};
+    function mat(color) {
+      if (!materialCache[color]) {
+        materialCache[color] = new THREE.MeshStandardMaterial({
+          color,
+          roughness: 0.8,
+          metalness: 0,
+          flatShading: true
+        });
+      }
+      return materialCache[color];
+    }
+
+    const edgeMaterial = new THREE.LineBasicMaterial({
+      color: 0x353535,
+      transparent: true,
+      opacity: 0.22
+    });
+
+    function addMesh(parent, geometry, color, x, y, z, withEdges = true) {
+      const mesh = new THREE.Mesh(geometry, mat(color));
+      mesh.position.set(x, y, z);
+      if (withEdges) {
+        mesh.add(new THREE.LineSegments(
+          new THREE.EdgesGeometry(geometry, 20),
+          edgeMaterial
+        ));
+      }
+      parent.add(mesh);
+      return mesh;
+    }
+
+    // A triangular prism with its ridge running along z.
+    function roofGeometry(width, depth, height) {
+      const shape = new THREE.Shape();
+      shape.moveTo(-width / 2, 0);
+      shape.lineTo(width / 2, 0);
+      shape.lineTo(0, height);
+      shape.closePath();
+
+      const geometry = new THREE.ExtrudeGeometry(shape, {
+        depth,
+        bevelEnabled: false
+      });
+      geometry.translate(0, 0, -depth / 2);
+      return geometry;
+    }
+
+    function building(parent, x, z, w, d, h, wall, roof, rotation = 0) {
+      const group = new THREE.Group();
+      group.position.set(x, 0.3, z);
+      group.rotation.y = rotation;
+
+      addMesh(group, new THREE.BoxGeometry(w, h, d), wall, 0, h / 2, 0);
+      addMesh(
+        group,
+        roofGeometry(w + 0.08, d + 0.08, Math.min(w, d) * 0.45),
+        roof,
+        0, h, 0
+      );
+
+      parent.add(group);
+    }
+
+    function umbrella(parent, x, z) {
+      addMesh(
+        parent,
+        new THREE.CylinderGeometry(0.015, 0.015, 0.42, 6),
+        palette.pole,
+        x, 0.55, z,
+        false
+      );
+      addMesh(
+        parent,
+        new THREE.ConeGeometry(0.34, 0.14, 8),
+        palette.umbrella,
+        x, 0.8, z
+      );
+    }
+
+    function tree(parent, x, z, scale = 1) {
+      addMesh(
+        parent,
+        new THREE.CylinderGeometry(0.03, 0.03, 0.2 * scale, 6),
+        palette.trunk,
+        x, 0.3 + 0.1 * scale, z,
+        false
+      );
+      addMesh(
+        parent,
+        new THREE.ConeGeometry(0.2 * scale, 0.6 * scale, 7),
+        palette.tree,
+        x, 0.3 + 0.5 * scale, z
+      );
+    }
+
+    function lamp(parent, x, z) {
+      addMesh(
+        parent,
+        new THREE.CylinderGeometry(0.012, 0.012, 0.6, 6),
+        palette.pole,
+        x, 0.64, z,
+        false
+      );
+      addMesh(
+        parent,
+        new THREE.BoxGeometry(0.06, 0.06, 0.06),
+        palette.pole,
+        x, 0.96, z,
+        false
+      );
+    }
+
+    function createSquare() {
+      const square = new THREE.Group();
+
+      // Ground and paved plaza.
+      addMesh(square, new THREE.BoxGeometry(5, 0.2, 5), palette.grass, 0, 0.1, 0);
+      addMesh(square, new THREE.BoxGeometry(3.6, 0.06, 3.6), palette.paving, 0.2, 0.23, 0.2);
+
+      // Octagonal fountain in the middle.
+      addMesh(square, new THREE.CylinderGeometry(0.62, 0.66, 0.14, 8), palette.stone, 0.2, 0.33, 0.2);
+      addMesh(square, new THREE.CylinderGeometry(0.52, 0.52, 0.02, 8), palette.water, 0.2, 0.4, 0.2, false);
+      addMesh(square, new THREE.CylinderGeometry(0.07, 0.09, 0.36, 8), palette.stone, 0.2, 0.58, 0.2);
+      addMesh(square, new THREE.CylinderGeometry(0.24, 0.12, 0.08, 8), palette.stone, 0.2, 0.78, 0.2);
+      addMesh(square, new THREE.CylinderGeometry(0.03, 0.05, 0.22, 8), palette.stone, 0.2, 0.92, 0.2);
+
+      // Buildings framing the back and left side of the square.
+      building(square, -1.6, -2.05, 1.3, 0.8, 1.2, palette.wallSand, palette.roofDark);
+      building(square, 0.0, -2.05, 1.2, 0.8, 1.5, palette.wallTerracotta, palette.roof);
+      building(square, 1.55, -2.05, 1.4, 0.8, 1.1, palette.wallCream, palette.roof);
+      building(square, -2.05, -0.3, 1.3, 0.8, 1.0, palette.wallCream, palette.roof, Math.PI / 2);
+      building(square, -2.05, 1.3, 1.4, 0.8, 1.3, palette.wallTerracotta, palette.roof, Math.PI / 2);
+
+      // Café umbrellas.
+      umbrella(square, 1.4, -1.0);
+      umbrella(square, -0.9, -1.0);
+      umbrella(square, 1.3, 1.4);
+      umbrella(square, -0.9, 1.5);
+
+      // Lamps.
+      lamp(square, -0.6, 0.2);
+      lamp(square, 1.0, 0.2);
+
+      // Trees on the open edges.
+      tree(square, 2.25, 0.2, 1.1);
+      tree(square, 2.2, 1.3);
+      tree(square, 2.3, 2.25, 1.2);
+      tree(square, 1.1, 2.3);
+      tree(square, -0.2, 2.3, 1.15);
+
+      // Centre the model vertically.
+      square.position.y = -0.55;
+      return square;
+    }
+
+    // Pitch (tilt) wraps yaw (spin) so the square never flips over.
+    const tilt = new THREE.Group();
+    const spin = new THREE.Group();
+    tilt.add(spin);
+    spin.add(createSquare());
+    scene.add(tilt);
+
+    const MIN_PITCH = 0.1;
+    const MAX_PITCH = 1.35;
+    let pitch = 0.6;
+    let yaw = -Math.PI / 4;
+
+    function applyRotation() {
+      pitch = THREE.MathUtils.clamp(pitch, MIN_PITCH, MAX_PITCH);
+      tilt.rotation.x = pitch;
+      spin.rotation.y = yaw;
+    }
+
+    applyRotation();
+
+    // --------------------------------------------------
+    // DRAG ROTATION, MOMENTUM AND CLICK-TO-SPAWN
+    // --------------------------------------------------
+
+    let dragging = false;
+    let previousX = 0;
+    let previousY = 0;
+    let downX = 0;
+    let downY = 0;
+    let velocityYaw = 0;
+    let velocityPitch = 0;
+    let lastInteraction = performance.now();
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.params.Line.threshold = 0.01;
+    const pointer = new THREE.Vector2();
+
+    renderer.domElement.addEventListener('pointerdown', event => {
+      dragging = true;
+      previousX = downX = event.clientX;
+      previousY = downY = event.clientY;
+      velocityYaw = 0;
+      velocityPitch = 0;
+      lastInteraction = performance.now();
+
+      renderer.domElement.setPointerCapture(event.pointerId);
+    });
+
+    renderer.domElement.addEventListener('pointermove', event => {
+      if (!dragging) return;
+
+      const dx = event.clientX - previousX;
+      const dy = event.clientY - previousY;
+
+      velocityYaw = dx * 0.006;
+      velocityPitch = dy * 0.006;
+
+      yaw += velocityYaw;
+      pitch += velocityPitch;
+      applyRotation();
+
+      previousX = event.clientX;
+      previousY = event.clientY;
+      lastInteraction = performance.now();
+    });
+
+    function handleClick(event) {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+
+      // Clicking the square itself doesn't spawn anything.
+      if (raycaster.intersectObject(tilt, true).length > 0) return;
+
+      // Drop the burst somewhere along the ray, in front of or behind the square.
+      const distance = camera.position.z * (0.4 + Math.random() * 0.6);
+      const point = raycaster.ray.at(distance, new THREE.Vector3());
+      spawnDots(point, 60);
+    }
+
+    renderer.domElement.addEventListener('pointerup', event => {
+      dragging = false;
+      if (Math.hypot(event.clientX - downX, event.clientY - downY) < 6) {
+        velocityYaw = 0;
+        velocityPitch = 0;
+        handleClick(event);
+      }
+    });
+
+    renderer.domElement.addEventListener('pointercancel', () => {
+      dragging = false;
+    });
+
+    // --------------------------------------------------
+    // ANIMATION
+    // --------------------------------------------------
+
+    const clock = new THREE.Clock();
+    const BURST_MS = 1400;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = Math.min(clock.getDelta(), 0.05);
+      const time = clock.elapsedTime;
+      const now = performance.now();
+
+      for (let i = 0; i < particleCount; i++) {
+        const p = particles[i];
+        p.angle += p.speed * delta;
+
+        let x = Math.cos(p.angle) * p.radius;
+        let y = p.y + Math.sin(time * 0.28 + p.phase) * 0.32;
+        let z = Math.sin(p.angle) * p.radius;
+
+        // Freshly spawned dots ease out from the click point.
+        if (p.origin) {
+          const t = (now - p.born) / BURST_MS;
+          if (t >= 1) {
+            p.origin = null;
+          } else {
+            const ease = 1 - Math.pow(1 - t, 3);
+            x = p.origin.x + (x - p.origin.x) * ease;
+            y = p.origin.y + (y - p.origin.y) * ease;
+            z = p.origin.z + (z - p.origin.z) * ease;
+          }
+        }
+
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+      }
+
+      particleGeometry.attributes.position.needsUpdate = true;
+      field.rotation.y = Math.sin(time * 0.07) * 0.12;
+
+      if (!dragging) {
+        if (now - lastInteraction > 1800) {
+          yaw += 0.16 * delta;
+        } else {
+          yaw += velocityYaw;
+          pitch += velocityPitch;
+        }
+        applyRotation();
+
+        velocityYaw *= 0.96;
+        velocityPitch *= 0.96;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // --------------------------------------------------
+    // RESPONSIVE RESIZING
+    // --------------------------------------------------
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      fitCamera();
+
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+  </script>
 </body>
 </html>
