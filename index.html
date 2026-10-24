@@ -95,6 +95,104 @@
 
     .contact a { color: inherit; }
 
+    nav { display: flex; gap: 22px; pointer-events: auto; }
+
+    nav a {
+      color: #62625f;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    nav a:hover { border-bottom-color: currentColor; }
+
+    .panel {
+      display: none;
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      overflow-y: auto;
+      padding: 72px 24px 48px;
+      background: rgba(222, 222, 219, 0.96);
+      color: #30302e;
+    }
+
+    .panel:target { display: block; }
+
+    .panel-inner { max-width: 880px; margin: 0 auto; }
+
+    .panel h2 {
+      margin: 0 0 28px;
+      color: #62625f;
+      font-size: 13px;
+      font-weight: normal;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .back {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      color: #62625f;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .back:hover { border-bottom-color: currentColor; }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 28px;
+    }
+
+    .project { margin: 0; }
+
+    .project img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: filter .25s ease;
+    }
+
+    .project:hover img { filter: none; }
+
+    .project figcaption,
+    .project-link {
+      margin-top: 10px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .project-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 4 / 3;
+      margin-top: 0;
+      padding: 16px;
+      border: 1px solid #62625f;
+      color: #30302e;
+      text-align: center;
+      text-decoration: none;
+      transition: background .18s ease;
+    }
+
+    .project-link:hover { background: #cfcfcb; }
+
+    .about { max-width: 520px; font-size: 15px; line-height: 1.6; }
+
+    .about a { color: inherit; }
+
     @media (max-width: 480px) {
       header { top: 16px; }
       .tagline { font-size: 12px; }
@@ -108,10 +206,56 @@
   <header>
     <img class="logo" src="images/logo_with_text_transparent.png" alt="Plateia AI logo">
     <p class="tagline"><i>Plateia AI is a grassroots initiative demystifying AI and initiating open dialogues about its social and environmental impact.</i></p>
-    <p class="note"><i>New website under construction! Thank you for your patience :) </i></p>
+    <nav>
+      <a href="#projects">Projects</a>
+      <a href="#about">About</a>
+    </nav>
   </header>
 
+  <section id="projects" class="panel" aria-label="Projects">
+    <a class="back" href="#">&larr; Home</a>
+    <div class="panel-inner">
+      <h2>Projects</h2>
+      <div class="projects">
+        <figure class="project">
+          <img src="images/workshop.JPG" alt="Workshop" loading="lazy">
+          <figcaption>Workshops</figcaption>
+        </figure>
+        <figure class="project">
+          <img src="images/seminar.JPG" alt="Seminar" loading="lazy">
+          <figcaption>Seminars</figcaption>
+        </figure>
+        <figure class="project">
+          <img src="images/discussion.jpg" alt="Discussion" loading="lazy">
+          <figcaption>Discussions</figcaption>
+        </figure>
+        <figure class="project">
+          <img src="images/film.png" alt="Film night" loading="lazy">
+          <figcaption>Film Nights</figcaption>
+        </figure>
+        <figure class="project">
+          <img src="images/zine.JPG" alt="Zine" loading="lazy">
+          <figcaption>Zine-making</figcaption>
+        </figure>
+        <figure class="project">
+          <a class="project-link" href="https://docs.google.com/spreadsheets/d/1k0lOTFq_YeZ_W8Ep8Ble-0YrDCocB-I6JvZlaBOE56g/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Cartographing AI in Greece &nearr;</a>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="panel" aria-label="About">
+    <a class="back" href="#">&larr; Home</a>
+    <div class="panel-inner about">
+      <h2>About</h2>
+      <p>Born from the collective effort of researchers, educators and citizens, Plateia AI aims to bridge the gap between technology and society through open dialogue, discussion and multidisciplinary collaboration.</p>
+      <p>Plateia AI thrives on community participation. Whether you're a student, a researcher, a professional or simply curious about artificial intelligence, there are many ways to get involved. For now, follow us on <a href="https://www.instagram.com/plateiaai/" target="_blank" rel="noopener noreferrer">Instagram</a> and <a href="https://www.linkedin.com/company/plateia-ai-gr/" target="_blank" rel="noopener noreferrer">LinkedIn</a> and join our events. Soon we may also share open calls for specific projects and ideas.</p>
+      <p>Currently hosted at <a href="https://www.instagram.com/studio.imposter/" target="_blank" rel="noopener noreferrer">Imposter Studio</a>.</p>
+    </div>
+  </section>
+
   <footer role="contentinfo">
+    <p class="note"><i>New website under construction! Thank you for your patience :) </i></p>
     <div class="icons">
       <a href="https://www.instagram.com/plateiaai/" target="_blank" rel="noopener noreferrer" aria-label="Plateia AI on Instagram">
         <img src="images/instagram.png" alt="Instagram">
@@ -603,6 +747,11 @@
     }
 
     animate();
+
+    // Escape closes an open Projects/About panel.
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && location.hash) location.hash = '';
+    });
 
     // --------------------------------------------------
     // RESPONSIVE RESIZING
